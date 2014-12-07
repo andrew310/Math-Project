@@ -27,26 +27,32 @@ navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mo
         };
 }());
 
+//top line is the thing that is dragged, bottom is the magnet
 var draggableEl = document.querySelector('[data-drag]'),
     magnet = document.querySelector('.magnet-zone');
     
     
+    
 
 // create a SpringSystem and a Spring with a bouncy config.
+
 var springSystem = new rebound.SpringSystem(),
     spring = springSystem.createSpring(100, 7.5),
     magnetSpring = springSystem.createSpring(450, 13),
-    x = ($('body').width() / 2) - 30,
-    y = 10,
+    //below sets the location of the draggable element with x and y with relation to magnet zone -- andrew
+    x = ($('magnet-zone2').width() / 2) + 550,
+    y = 380,
     springDestX,
     springDestY,
     magnetX,
     magnetY,
     events = [];
 
+//sets the current position of the spring. Listener is updated with this value.
 spring.setCurrentValue(1).setAtRest();
 magnetSpring.setCurrentValue(1).setAtRest();
 
+//this gets the top left corner of the rect
 function getCenteredCoordinates(el1, el2) {
   var rect1 = el1.getBoundingClientRect(),
       rect2 = el2.getBoundingClientRect(),
@@ -68,8 +74,10 @@ function onSpringUpdate(spring) {
   if (!$(draggableEl).hasClass('edge')) {
     var val = spring.getCurrentValue(),
         coords = getCenteredCoordinates(magnet, draggableEl),
+        //this puts a rectangle around draggable element aka "data-drag"
         elRect = draggableEl.getBoundingClientRect();
 
+    //oookkkk
     x = rebound.MathUtil.mapValueInRange(val, 0, 1, coords.x, springDestX || elRect.left);
     y = rebound.MathUtil.mapValueInRange(val, 0, 1, coords.y, springDestY || elRect.top);
     moveToPos(x, y);
@@ -119,10 +127,11 @@ function isOverlapping(el1, el2) {
   );
 }
 
+//movement??
 function moveMagnet(x, y) {
   var dist = 12,
-      width = $('body').width() / 2,
-      height = $('body').height(),
+      width = $('magnet-zone2').width() / 2,
+      height = $('magnet-zone2').height(),
       direction = x > width ? 1 : -1,
       percX = x > width ? (x - width) / width : -(width - x) / width,
       percY = Math.min(1, (height - y) / (height / 2));
@@ -131,6 +140,7 @@ function moveMagnet(x, y) {
   magnet.style.marginBottom = Math.round(dist * percY) + 'px';
 }
 
+//not really sure what this does
 function trackEvent(event) {
   if (events.length > 5) {
     events.pop();
